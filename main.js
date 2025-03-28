@@ -82,7 +82,7 @@ $(document).ready(function () {
         maxScore = Math.max(...Object.values(stateScores));
 
         console.log("✅ Data loaded:", organizationData, stateScores);
-        if(stateScores.length>0){applyStateColors();}
+        applyStateColors();
       })
       .catch(error => {
         console.error("❌ Error fetching spreadsheet:", error);
