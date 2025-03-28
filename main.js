@@ -8,60 +8,6 @@ $(document).ready(function () {
 
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQuXxHfMvZnJV1LwPEnNUOjlS4JAgVdgUtf95Lfn8EGDE-GtaRM0eaDsmy0IDEVabRF1P22j4pmVI8E/pub?gid=0&single=true&output=csv";
 
-    const presetConnections = [
-        { from: "NY", to: "MO" },
-        { from: "CA", to: "TX" },
-        { from: "FL", to: "OH" },
-    ];
-
-    function getStateCenter(stateId) {
-        let state = $("#" + stateId);
-        if (state.length === 0) return null;
-        let bbox = state[0].getBBox();
-
-        if (stateId !== 'FL') {
-            return {
-                x: bbox.x + bbox.width / 2,
-                y: bbox.y + bbox.height / 2
-            };
-        } else {
-            return {
-                x: bbox.x + bbox.width / 2 + 40,
-                y: bbox.y + bbox.height / 2
-            };
-        }
-    }
-
-    function drawLine(state1, state2) {
-        let pos1 = getStateCenter(state1);
-        let pos2 = getStateCenter(state2);
-        if (!pos1 || !pos2) return;
-
-        let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", pos1.x);
-        line.setAttribute("y1", pos1.y);
-        line.setAttribute("x2", pos2.x);
-        line.setAttribute("y2", pos2.y);
-        line.setAttribute("stroke", "#FF0000");
-        line.setAttribute("stroke-width", "2");
-        line.setAttribute("class", "state-connection");
-
-        svg.append(line);
-    }
-
-    $("#toggle-connections").click(function () {
-        if (!connectionsVisible) {
-            presetConnections.forEach(({ from, to }) => drawLine(from, to));
-            $("#connections-info").slideDown();
-            $(this).text("Clear Connections");
-        } else {
-            $(".state-connection").remove();
-            $("#connections-info").slideUp();
-            $(this).text("Show Connections");
-        }
-        connectionsVisible = !connectionsVisible;
-    });
-
     function fetchGoogleSheetsData() {
         fetch(SHEET_CSV_URL)
             .then(response => response.text())
@@ -70,9 +16,8 @@ $(document).ready(function () {
                 rows.slice(1).forEach(row => {
                     let organization = row[0]?.trim().toUpperCase().replace(/['"]+/g, ''); // Remove single/double quotes
                     let state = row[1]?.trim();
-                    let industry = row[2]?.trim();
                     let c = parseFloat(row[3]?.trim());
-                    if (state && organization && !isNaN(c) && industry) {
+                    if (state && organization) {
                         let stateList = state.split(";").map(s => s.trim().toUpperCase());
                  
                         stateList.forEach(stateItem => {
@@ -83,7 +28,7 @@ $(document).ready(function () {
                                 stateScores[stateItem] = 0;
                             }
                             organizationData[stateItem].push(`${organization}: <div class="industry">${industry}</div>`);
-                            stateScores[stateItem] += c;
+                            if(!isNaN(c)){stateScores[stateItem] += c;}
                         });
                     }
                 });
@@ -137,7 +82,7 @@ $(document).ready(function () {
 
         let orgDetails = orgList.length > 0
             ? `<ul style="text-align:left;">${orgList.map(org => `<li>${org}</li>`).join("")}</ul>`
-            : "<br><strong>No organizations listed.</strong>";
+            : "<br><strong>No information.</strong>";
 
         $("#info-box").html(info + orgDetails);
     }, function () {
