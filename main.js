@@ -64,7 +64,7 @@ $(document).ready(function () {
 
           if (state && organization) {
             if (!organizationData[state]) organizationData[state] = [];
-            if (!stateScores[state] && !isNaN(score) stateScores[state] = 0;
+            if (!stateScores[state] && !isNaN(score)){stateScores[state] = 0;}
             
             organizationData[state].push(
               `${organization}: <span class="industry">${industry}</span>`
