@@ -60,7 +60,7 @@ $(document).ready(function () {
         rows.slice(1).forEach(row => {
           let organization = row[0]?.trim().toUpperCase().replace(/['"]+/g, '');
           let state = row[1]?.trim();
-          let score = parseFloat(row[3]?.trim());
+          let score = parseFloat(row[2]?.trim());
 
           if (state && organization) {
             if (!organizationData[state]) organizationData[state] = [];
