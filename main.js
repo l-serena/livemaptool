@@ -5,8 +5,7 @@ $(document).ready(function () {
   let stateScores = {};
   let minScore = 0;
   let maxScore = 0;
-
-  // Handle Spreadsheet URL Submission
+  
   $("#load-spreadsheet").click(function () {
     const url = $("#spreadsheet-url").val().trim();
     if (!url || !url.includes("docs.google.com")) {
@@ -16,7 +15,6 @@ $(document).ready(function () {
     fetchGoogleSheetsData(url);
   });
 
-  // Generate Embed Code
   $("#generate-embed").click(function () {
     const url = $("#spreadsheet-url").val().trim();
     if (!url || !url.includes("docs.google.com")) {
@@ -43,7 +41,6 @@ $(document).ready(function () {
     alert("Embed code copied to clipboard!");
   });
 
-  // Load URL from query param for embedding
   const urlParams = new URLSearchParams(window.location.search);
   const autoSheet = urlParams.get("spreadsheet");
   if (autoSheet) {
@@ -63,7 +60,6 @@ $(document).ready(function () {
         rows.slice(1).forEach(row => {
           let organization = row[0]?.trim().toUpperCase().replace(/['"]+/g, '');
           let state = row[1]?.trim();
-          let industry = row[2]?.trim();
           let score = parseFloat(row[3]?.trim());
 
           if (state && organization) {
