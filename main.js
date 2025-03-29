@@ -23,7 +23,7 @@ $(document).ready(function () {
     return;
   }
   
-  const embedSrc = `${window.location.origin}${window.location.pathname}?spreadsheet=${encodeURIComponent(url)}`;
+  const embedSrc = `${window.location.origin}${window.location.pathname}#mapbody?spreadsheet=${encodeURIComponent(url)}`;
   const embedCode = `
 <iframe 
   src="${embedSrc}" 
