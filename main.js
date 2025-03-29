@@ -6,6 +6,14 @@ $(document).ready(function () {
   let minScore = 0;
   let maxScore = 0;
   let embedVisible = false;
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoSheet = urlParams.get("spreadsheet");
+  const isEmbed = urlParams.get("embed") === "true";
+
+  if (isEmbed) {
+    $("#input-bar").hide();
+    $("#embed-box").hide();
+  }
   $("#load-spreadsheet").click(function () {
     const url = $("#spreadsheet-url").val().trim();
     if (!url || !url.includes("docs.google.com")) {
@@ -17,13 +25,13 @@ $(document).ready(function () {
 
   $("#generate-embed").click(function () {
   const url = $("#spreadsheet-url").val().trim();
-  
+
   if (!url || !url.includes("docs.google.com")) {
     alert("Please provide a valid Google Sheets CSV URL.");
     return;
   }
-  
-  const embedSrc = `${window.location.origin}${window.location.pathname}#mapbody?spreadsheet=${encodeURIComponent(url)}`;
+
+  const embedSrc = `${window.location.origin}${window.location.pathname}?spreadsheet=${encodeURIComponent(url)}&embed=true`;
   const embedCode = `
 <iframe 
   src="${embedSrc}" 
@@ -40,7 +48,8 @@ $(document).ready(function () {
     $("#embed-box").addClass("hidden");
     embedVisible = false;}
 });
-   
+
+
 
 
   $("#copy-embed").click(function () {
