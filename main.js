@@ -60,8 +60,6 @@ $(document).ready(function () {
     alert("Embed code copied to clipboard.");
   });
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const autoSheet = urlParams.get("spreadsheet");
   if (autoSheet) {
     $("#spreadsheet-url").val(decodeURIComponent(autoSheet));
     fetchGoogleSheetsData(autoSheet);
