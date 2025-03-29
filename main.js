@@ -5,7 +5,7 @@ $(document).ready(function () {
   let stateScores = {};
   let minScore = 0;
   let maxScore = 0;
-  
+  let embedVisible = false;
   $("#load-spreadsheet").click(function () {
     const url = $("#spreadsheet-url").val().trim();
     if (!url || !url.includes("docs.google.com")) {
@@ -16,29 +16,39 @@ $(document).ready(function () {
   });
 
   $("#generate-embed").click(function () {
-    const url = $("#spreadsheet-url").val().trim();
-    if (!url || !url.includes("docs.google.com")) {
-      alert("Please provide a valid Google Sheets CSV URL.");
-      return;
-    }
-    const embedCode = `
+  const url = $("#spreadsheet-url").val().trim();
+  
+  if (!url || !url.includes("docs.google.com")) {
+    alert("Please provide a valid Google Sheets CSV URL.");
+    return;
+  }
+  
+  const embedSrc = `${window.location.origin}${window.location.pathname}?spreadsheet=${encodeURIComponent(url)}`;
+  const embedCode = `
 <iframe 
-  src="${window.location.origin + window.location.pathname}?spreadsheet=${encodeURIComponent(url)}" 
+  src="${embedSrc}" 
   width="100%" 
   height="600" 
   style="border:none;">
 </iframe>`.trim();
 
-    $("#embed-code").val(embedCode);
+  $("#embed-code").val(embedCode);
+  
+   if(!embedVisible){
     $("#embed-box").removeClass("hidden");
-  });
+    embedVisible = true;}else{
+    $("#embed-box").addClass("hidden");
+    embedVisible = false;}
+});
+   
+
 
   $("#copy-embed").click(function () {
     const textarea = document.getElementById("embed-code");
     textarea.select();
     textarea.setSelectionRange(0, 99999);
     document.execCommand("copy");
-    alert("Embed code copied to clipboard!");
+    alert("Embed code copied to clipboard.");
   });
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -105,32 +115,27 @@ $(document).ready(function () {
     });
   }
 
-  $("#toggle-connections").click(function () {
-    if (!connectionsVisible) {
-      presetConnections.forEach(({ from, to }) => drawLine(from, to));
-      $("#connections-info").slideDown();
-      $(this).text("Clear Connections");
-    } else {
-      $(".state-connection").remove();
-      $("#connections-info").slideUp();
-      $(this).text("Show Connections");
-    }
-    connectionsVisible = !connectionsVisible;
-  });
-
   $("path, circle").hover(function () {
-    let stateId = $(this).attr("id");
-    if (stateId === "path58" || stateId === "circle60") stateId = "DC";
+  let $this = $(this);
+  let stateId = $this.attr("id");
 
-    let info = $(this).attr("data-info") || `State: ${stateId}`;
-    let orgList = organizationData[stateId] || [];
+  // Fix DC SVG IDs
+  if (stateId === "path58" || stateId === "circle60") stateId = "DC";
 
-    let orgDetails = orgList.length > 0
-      ? `<ul style="text-align:left;">${orgList.map(org => `<li>${org}</li>`).join("")}</ul>`
-      : "<br><strong>No organizations listed.</strong>";
+  
 
-    $("#info-box").html(info + orgDetails);
-  }, function () {
-    $("#info-box").html("Hover over a state to see details");
-  });
+  let info = `<h3>${$this.attr("data-info")}</h3>` || `State: ${stateId}`;
+  let orgList = organizationData[stateId] || [];
+
+  let orgDetails = orgList.length > 0
+    ? `<ul style="text-align:left;">${orgList.map(org => `<li>${org}</li>`).join("")}</ul>`
+    : "<br>No information.";
+  $this.addClass("state-hover");
+  $("#info-box").html(info + orgDetails);
+    
+}, function () {
+  // Remove highlight when not hovering
+  $(this).removeClass("state-hover");
+  $("#info-box").html("Hover over a state to see details");
+});
 });
